@@ -12,11 +12,11 @@ const addBook=document.querySelector('.add-book')
 const bookShelf=document.querySelector('.bookshelf')
 const comicType=document.querySelector('.comic')
 const normalType=document.querySelector('.normal');
+let clickTime=0
 let book
 let type="normal"
 let readStatus="unread"
 let inputField=document.querySelectorAll('input')
-let i=0
 
 inputField.forEach(field =>{
     let value=field.value
@@ -60,23 +60,32 @@ addBook.addEventListener('mouseout',()=>{
 //////////////ADD BOOK\\\\\\\\\\\\\\\\\\
 
 addBook.addEventListener('click', ()=>{
-    title=inputFieldTitle.value
-    author=inputFieldAuthor.value
-    pages=inputFieldPages.value
-    book= new Book(title,author,pages,readStatus,type)
-    clearForm()
-    addBookToLibrary()
+    if(inputField=="" || clickTime==0 || inputFieldTitle.value=="What's the Book's Title?" || inputFieldAuthor.value=="Who's the Author?" ){//checks if all values have been given and chosen
+        alert("Please make sure you have entered all values and chosen the type of book!")
+    }
+    else{
+        title=inputFieldTitle.value
+        author=inputFieldAuthor.value
+        pages=inputFieldPages.value
+        book= new Book(title,author,pages,readStatus,type)
+        clearForm()
+        addBookToLibrary()
+        }
 })
 ///////////////////******\\\\\\\\\\\\\\\
 comicType.addEventListener('click', () =>{
+    clickTime=1
     type='comic'
     comicType.style.color="red"
     normalType.style.color='black'
+    return clickTime
 })
 normalType.addEventListener('click', ()=>{
+    clickTime=1
     type='normal'
     comicType.style.color='black'
     normalType.style.color='burlywood'
+    return clickTime
 })
 
 readSwitch.addEventListener('change', e =>{ //read or unread
@@ -94,14 +103,15 @@ readSwitch.addEventListener('change', e =>{ //read or unread
 })
 
 /////////////////////*******Functions Here******\\\\\\\\\\\\\\\\\\\\\\\\\
-function clearForm(){
+function clearForm(){//clears form to default when it is canceled or book is added
     inputFieldAuthor.value="Who's the Author?" 
     inputFieldTitle.value="What's the Book's Title?"
-    inputFieldPages.value="Pages"
+    inputFieldPages.value=""
     comicType.style.color='black'
     normalType.style.color='black'
     document.querySelector('.switch input').checked=false
     readStatus="unread"
+    type="normal"
     bookForm.style.boxShadow="0 0 30px rgb(247, 83, 83)"
     read.style.color="rgb(247, 83, 83)"
     addForm.classList.add('hidden')  
@@ -111,7 +121,7 @@ function clearForm(){
 let myLibrary = [];
 
 
-function Book(title,author,pages,readStatus,type){
+function Book(title,author,pages,readStatus,type){//book added to array by storing all values in objects
     this.title= title
     this.auth= author
     this.pages= pages 
@@ -119,15 +129,20 @@ function Book(title,author,pages,readStatus,type){
     this.bookType=type
 }
 
-function addBookToLibrary(){
+function addBookToLibrary(){//adds books to the myLibrary array
     myLibrary.push(book)
     displayBooks()
 }
 
-function displayBooks(){
+function displayBooks(){//displays book in the div, bookshelf
     length=myLibrary.length
     let bookDis
-   for(i;i<length;i++){
+    let currentBooks=document.querySelectorAll('.book')
+    currentBooks.forEach(book => {
+        bookShelf.removeChild(book)
+    })
+
+   for(i=0;i<length;i++){
        bookDis=myLibrary[i]
        const bookTitle=bookDis.title
        const bookAuthor=bookDis.auth
@@ -165,6 +180,16 @@ function displayBooks(){
        removeBtn.textContent='Remove'
        removeBtn.style.color='red'
        removeBtn.style.padding='5px'
+        removeBtn.addEventListener('mouseover', ()=>{
+            removeBtn.style.color="black"
+        })
+        removeBtn.addEventListener('mouseout', ()=>{
+            removeBtn.style.color="red"
+        })
+        removeBtn.addEventListener('click', ()=>{
+            console.log(myLibrary.indexOf(bookDis))
+            removeBook(myLibrary.indexOf(bookDis))
+        })
        bottom.appendChild(removeBtn)
        bottom.appendChild(pagesDisplay)
 
@@ -185,7 +210,8 @@ function displayBooks(){
            bottom.style.backgroundColor="rgba(0, 0, 0, 0.521)"
            
        }
-       if(coverType=="normal"){
+       //if and else ,here, change the element's positioning based on the cover chosen by the user
+       if(coverType=="normal"){ 
         newBook.style.backgroundImage="url(./media/normal-cover.png)"
         top.style.fontFamily='Sedgwick Ave'
         top.style.fontSize="18px"
@@ -205,6 +231,7 @@ function displayBooks(){
         bottom.style.justifyContent="space-between"
         bottom.style.alignItems="center"
        }
+       //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
        center.appendChild(bRS)
        newBook.appendChild(top)
@@ -222,40 +249,11 @@ function displayBooks(){
         bRS.style.color="rgb(247, 83, 83)"
     }
    }
-   removeBookButton()
 }
 
-displayBooks()
 
-
-function removeBookButton(){
-let bookTODelete
-let index
-let books=document.querySelectorAll('.book')
-let button=document.querySelectorAll('.book-remove')
-books.forEach(book =>{
-     bookTODelete=book.title
-     index=myLibrary.indexOf(bookTODelete)
-    book.addEventListener('mouseover',()=>{
-        button.forEach(button =>{
-            button.addEventListener('mouseover', ()=>{
-                button.style.color="black"
-            })
-            button.addEventListener('mouseout', ()=>{
-                button.style.color="red"
-            })
-            button.addEventListener('click', ()=>{
-                removeBook(index)
-            })
-        
-        })
-    })
-
-})
-}
-
-function removeBook(index){
-    myLibrary.splice(index, 1)
+function removeBook(i){//removes books based on thier index
+    myLibrary.splice(i,1)
     console.log(myLibrary)
+    displayBooks(myLibrary)
 }
-
