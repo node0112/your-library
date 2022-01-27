@@ -15,7 +15,7 @@ const normalType=document.querySelector('.normal');
 let clickTime=0
 let book
 let type="normal"
-let readStatus="unread"
+let readStatus=false
 let inputField=document.querySelectorAll('input')
 
 inputField.forEach(field =>{
@@ -90,13 +90,13 @@ normalType.addEventListener('click', ()=>{
 
 readSwitch.addEventListener('change', e =>{ //read or unread
     if(e.target.checked){//read
-       readStatus="read"
+       readStatus=true
        bookForm.style.boxShadow="0 0 30px #00ff80"
        read.style.color="#00ff80"
        console.log(readStatus)
     }
     else if(e.target){ //unread
-        readStatus="unread"
+        readStatus=false
         bookForm.style.boxShadow="0 0 30px rgb(247, 83, 83)"
         read.style.color="rgb(247, 83, 83)"
     }
@@ -110,7 +110,7 @@ function clearForm(){//clears form to default when it is canceled or book is add
     comicType.style.color='black'
     normalType.style.color='black'
     document.querySelector('.switch input').checked=false
-    readStatus="unread"
+    readStatus=false
     type="normal"
     bookForm.style.boxShadow="0 0 30px rgb(247, 83, 83)"
     read.style.color="rgb(247, 83, 83)"
@@ -118,7 +118,8 @@ function clearForm(){//clears form to default when it is canceled or book is add
 }
 
 ///////// ADD-REMOVE AND DISPLAY BOOKS\\\\\\\\\\\\
-let myLibrary = [];
+let myLibrary = [{title: "test 1", auth: "joe mama", pages: "12", readStat: false, bookType: "comic"},
+{title: "test 2", auth: "joe mama", pages: "12", readStat: true, bookType: "normal"}];
 
 
 function Book(title,author,pages,readStatus,type){//book added to array by storing all values in objects
@@ -172,14 +173,27 @@ function displayBooks(){//displays book in the div, bookshelf
        //readSwitch, yup it's a pain in the a$$
        const bRS=document.createElement('div') //bRS= bookReadSelector
        bRS.className='book-read'
-       bRS.textContent=bookRead
        bRS.style.cursor="pointer"
+       bRS.addEventListener('click', ()=>{
+           bookDis.readStat= !bookDis.readStat
+           displayBooks()
+       })
        
        const removeBtn=document.createElement('div')
        removeBtn.className='book-remove'
        removeBtn.textContent='Remove'
        removeBtn.style.color='red'
        removeBtn.style.padding='5px'
+       if(bookRead==true){
+        newBook.style.boxShadow="0 0 30px #00ff80"
+        bRS.style.color="#00ff80"
+        bRS.textContent="read"
+    }
+       else if(bookRead==false){
+        newBook.style.boxShadow="0 0 30px rgb(247, 83, 83)"
+        bRS.style.color="rgb(247, 83, 83)"
+        bRS.textContent="unread"
+    }
         removeBtn.addEventListener('mouseover', ()=>{
             removeBtn.style.color="black"
         })
@@ -195,7 +209,7 @@ function displayBooks(){//displays book in the div, bookshelf
 
 
        if(coverType=="comic"){
-           pagesDisplay.textContent=pages+" pgs"
+           pagesDisplay.textContent=bookDis.pages+" pgs"
            newBook.style.backgroundImage="url(./media/comic-cover.png)"
            newAuthor.style.fontFamily="comicFont"
            newTitle.style.fontFamily="comicFont"
@@ -240,16 +254,9 @@ function displayBooks(){//displays book in the div, bookshelf
 
        bookShelf.appendChild(newBook)
 
-       if(bookRead=="read"){
-        newBook.style.boxShadow="0 0 30px #00ff80"
-        bRS.style.color="#00ff80"
-    }
-    else if(bookRead=="unread"){
-        newBook.style.boxShadow="0 0 30px rgb(247, 83, 83)"
-        bRS.style.color="rgb(247, 83, 83)"
-    }
    }
 }
+displayBooks()
 
 
 function removeBook(i){//removes books based on thier index
