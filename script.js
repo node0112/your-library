@@ -15,7 +15,7 @@ const normalType=document.querySelector('.normal');
 let clickTime=0
 let book
 let type="normal"
-let readStatus=false
+let readStat=false
 let inputField=document.querySelectorAll('input')
 
 inputField.forEach(field =>{
@@ -67,7 +67,7 @@ addBook.addEventListener('click', ()=>{
         title=inputFieldTitle.value
         author=inputFieldAuthor.value
         pages=inputFieldPages.value
-        book= new Book(title,author,pages,readStatus,type)
+        book= new Book(title,author,pages,readStat,type)
         clearForm()
         addBookToLibrary()
         }
@@ -90,13 +90,12 @@ normalType.addEventListener('click', ()=>{
 
 readSwitch.addEventListener('change', e =>{ //read or unread
     if(e.target.checked){//read
-       readStatus=true
+       readStat=true
        bookForm.style.boxShadow="0 0 30px #00ff80"
        read.style.color="#00ff80"
-       console.log(readStatus)
     }
     else if(e.target){ //unread
-        readStatus=false
+        readStat=false
         bookForm.style.boxShadow="0 0 30px rgb(247, 83, 83)"
         read.style.color="rgb(247, 83, 83)"
     }
@@ -110,7 +109,7 @@ function clearForm(){//clears form to default when it is canceled or book is add
     comicType.style.color='black'
     normalType.style.color='black'
     document.querySelector('.switch input').checked=false
-    readStatus=false
+    readStat=false
     type="normal"
     bookForm.style.boxShadow="0 0 30px rgb(247, 83, 83)"
     read.style.color="rgb(247, 83, 83)"
@@ -118,15 +117,14 @@ function clearForm(){//clears form to default when it is canceled or book is add
 }
 
 ///////// ADD-REMOVE AND DISPLAY BOOKS\\\\\\\\\\\\
-let myLibrary = [{title: "test 1", auth: "joe mama", pages: "12", readStat: false, bookType: "comic"},
-{title: "test 2", auth: "joe mama", pages: "12", readStat: true, bookType: "normal"}];
+let myLibrary = [];
 
 
-function Book(title,author,pages,readStatus,type){//book added to array by storing all values in objects
+function Book(title,author,pages,readStat,type){//book added to array by storing all values in objects
     this.title= title
     this.auth= author
     this.pages= pages 
-    this.readStat= readStatus
+    this.readStat= readStat
     this.bookType=type
 }
 
@@ -143,7 +141,8 @@ function displayBooks(){//displays book in the div, bookshelf
         bookShelf.removeChild(book)
     })
 
-   for(i=0;i<length;i++){
+   for(let i=0;i<length;i++){
+       let currenBookNumber=i
        bookDis=myLibrary[i]
        const bookTitle=bookDis.title
        const bookAuthor=bookDis.auth
@@ -174,16 +173,6 @@ function displayBooks(){//displays book in the div, bookshelf
        const bRS=document.createElement('div') //bRS= bookReadSelector
        bRS.className='book-read'
        bRS.style.cursor="pointer"
-       bRS.addEventListener('click', ()=>{
-           bookDis.readStat= !bookDis.readStat
-           displayBooks()
-       })
-       
-       const removeBtn=document.createElement('div')
-       removeBtn.className='book-remove'
-       removeBtn.textContent='Remove'
-       removeBtn.style.color='red'
-       removeBtn.style.padding='5px'
        if(bookRead==true){
         newBook.style.boxShadow="0 0 30px #00ff80"
         bRS.style.color="#00ff80"
@@ -194,6 +183,17 @@ function displayBooks(){//displays book in the div, bookshelf
         bRS.style.color="rgb(247, 83, 83)"
         bRS.textContent="unread"
     }
+       bRS.addEventListener('click', ()=>{
+           changeReadStat(currenBookNumber)
+       })
+       center.appendChild(bRS)
+       
+       const removeBtn=document.createElement('div')
+       removeBtn.className='book-remove'
+       removeBtn.textContent='Remove'
+       removeBtn.style.color='red'
+       removeBtn.style.padding='5px'
+      
         removeBtn.addEventListener('mouseover', ()=>{
             removeBtn.style.color="black"
         })
@@ -247,7 +247,6 @@ function displayBooks(){//displays book in the div, bookshelf
        }
        //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-       center.appendChild(bRS)
        newBook.appendChild(top)
        newBook.appendChild(center)
        newBook.appendChild(bottom)
@@ -258,9 +257,20 @@ function displayBooks(){//displays book in the div, bookshelf
 }
 displayBooks()
 
+function changeReadStat(i){
+   book=myLibrary[i]
+   if(book.readStat==true){
+       book.readStat=false
+   }
+   else if(book.readStat==false){
+    book.readStat=true
+}
+   displayBooks()
+}
 
 function removeBook(i){//removes books based on thier index
     myLibrary.splice(i,1)
     console.log(myLibrary)
     displayBooks(myLibrary)
+    
 }
