@@ -124,8 +124,9 @@ ul{
   cursor: pointer;
   transition: all 1s;
 }
-
-
+.book-read{
+  transition: all 1s;
+}
 
 
 

@@ -120,12 +120,14 @@ function clearForm(){//clears form to default when it is canceled or book is add
 let myLibrary = [];
 
 
-function Book(title,author,pages,readStat,type){//book added to array by storing all values in objects
-    this.title= title
-    this.auth= author
-    this.pages= pages 
-    this.readStat= readStat
-    this.bookType=type
+class Book{//book added to array by storing all values in objects
+    constructor(title,author,pages,readStat,type){
+        this.title= title
+        this.auth= author
+        this.pages= pages 
+        this.readStat= readStat
+        this.bookType=type
+    }
 }
 
 function addBookToLibrary(){//adds books to the myLibrary array
@@ -183,6 +185,14 @@ function displayBooks(){//displays book in the div, bookshelf
         bRS.style.color="rgb(247, 83, 83)"
         bRS.textContent="unread"
     }
+    let bRSColor=bRS.style.color
+    bRS.addEventListener('mouseover',()=>{
+        bRS.style.color="black"
+    })
+    bRS.addEventListener('mouseout',()=>{
+        bRS.style.color=bRSColor
+    })
+
        bRS.addEventListener('click', ()=>{
            changeReadStat(currenBookNumber)
        })
